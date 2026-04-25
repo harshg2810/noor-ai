@@ -90,10 +90,11 @@
   .phone-demo {
     display: flex;
     justify-content: center;
+    align-items: flex-start;
   }
   .phone {
-    width: 100%;
-    max-width: 300px;
+    width: 260px;
+    flex-shrink: 0;
     background: #fff;
     border: 1px solid var(--line);
     border-radius: 40px;
@@ -110,8 +111,8 @@
     top: 22px;
     left: 50%;
     transform: translateX(-50%);
-    width: 72px;
-    height: 20px;
+    width: 64px;
+    height: 18px;
     background: #0F1220;
     border-radius: 20px;
     z-index: 2;
@@ -119,10 +120,10 @@
   .phone-screen {
     background: #FAFBFC;
     border-radius: 30px;
-    padding: 48px 18px 20px;
+    padding: 44px 16px 16px;
     display: flex;
     flex-direction: column;
-    min-height: 480px;
+    height: 460px;
   }
   .phone-header {
     text-align: center;
@@ -710,49 +711,99 @@
   .footer-bottom .wordmark { font-size: 20px; }
 
   /* ---------- RESPONSIVE ---------- */
+
+  /* Tablet (≤900px) */
   @media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; gap: 48px; padding: 32px 0 72px; }
-    .hero-copy h1 { max-width: 20ch; }
+    .hero { grid-template-columns: 1fr; gap: 40px; padding: 32px 0 64px; }
+    .hero-copy h1 { max-width: 100%; }
     .phone-demo { order: 2; }
     .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-    .plan { grid-template-columns: 1fr; gap: 28px; padding: 28px; }
-    .steps { grid-template-columns: 1fr; }
+    .plan { grid-template-columns: 1fr; gap: 24px; padding: 28px; }
+    .steps { grid-template-columns: 1fr 1fr; gap: 20px; }
     .panel.active { grid-template-columns: 1fr; }
-    .logos { grid-template-columns: repeat(3, 1fr); }
   }
-  @media (max-width: 640px) {
-    section { padding: 64px 0; }
-    .hero { padding: 48px 0 64px; }
-    .metrics-grid { grid-template-columns: 1fr; }
 
-    /* Stack cost table */
+  /* Large phone (≤640px) */
+  @media (max-width: 640px) {
+    .wrap { padding: 0 20px; }
+    section { padding: 56px 0; }
+
+    /* Header */
+    header { padding: 16px 0; }
+    .wordmark { font-size: 22px; }
+    .cta.secondary { padding: 8px 14px !important; font-size: 13px !important; }
+
+    /* Hero */
+    .hero { padding: 24px 0 48px; gap: 32px; }
+    .hero-copy h1 { font-size: clamp(26px, 7vw, 36px); }
+    .hero-copy p { font-size: 16px; margin-top: 14px; }
+    .cta { padding: 13px 20px; font-size: 15px; margin-top: 24px; }
+
+    /* Metrics */
+    .metrics { padding: 48px 0; }
+    .metrics-grid { grid-template-columns: 1fr; gap: 16px; }
+    .metric { padding: 18px; }
+    .metric-side .num { font-size: 22px; }
+
+    /* Headings */
+    h2 { font-size: clamp(22px, 6vw, 28px); max-width: 100%; }
+    .section-sub { font-size: 14px; }
+
+    /* Cost table */
+    .cost-wrap { border-radius: 8px; }
     .cost thead { display: none; }
-    .cost, .cost tbody, .cost tr, .cost td { display: block; width: 100%; }
-    .cost tr {
-      border-bottom: 1px solid var(--line);
-      padding: 12px 0;
-    }
+    .cost tbody { display: block; }
+    .cost tr { display: flex; flex-wrap: wrap; padding: 14px 16px; border-bottom: 1px solid var(--line); }
     .cost tr:last-child { border-bottom: none; }
-    .cost td {
-      border: none;
-      padding: 6px 20px;
-    }
-    .cost td.label {
-      width: 100%;
-      font-size: 13px;
+    .cost td { display: block; border: none; padding: 2px 0; font-size: 14px; }
+    .cost td.label { width: 100%; font-weight: 600; color: var(--text); font-size: 13px; margin-bottom: 6px; }
+    .cost td.num { width: 50%; }
+    .cost td.num::before {
+      content: attr(data-col) ": ";
+      display: block;
+      font-size: 11px;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.04em;
-      padding-top: 12px;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+      margin-bottom: 2px;
     }
-    .cost td.num::before {
-      content: attr(data-col) " · ";
-      color: var(--muted);
-      font-weight: 500;
-      margin-right: 4px;
-    }
-    .email-row { flex-direction: column; }
-    .footer-bottom { flex-direction: column; gap: 16px; align-items: flex-start; }
+    .cost-note { font-size: 14px; padding: 16px; }
+
+    /* Plan */
+    .plan { padding: 20px; border-radius: 12px; }
+    .plan h3 { font-size: 18px; }
+    .plan ul { margin-top: 16px; }
+    .plan li { font-size: 14px; }
+    .price-block { padding: 20px; }
+    .price-row .usd { font-size: 26px; }
+
+    /* Steps */
+    .steps { grid-template-columns: 1fr; gap: 16px; }
+    .step { padding: 20px; }
+
+    /* Tabs */
+    .tabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { white-space: nowrap; font-size: 14px; padding: 10px 16px; }
+    .dialogue { padding: 16px; }
+    .line { font-size: 13.5px; }
+
+    /* Footer */
+    footer { padding: 48px 0 28px; }
+    .footer-cta { max-width: 100%; }
+    .footer-cta h2 { font-size: clamp(20px, 5.5vw, 26px); }
+    .email-row { flex-direction: column; gap: 10px; }
+    .email-row input { font-size: 16px; }
+    .footer-bottom { flex-direction: column; gap: 12px; align-items: flex-start; margin-top: 40px; }
+  }
+
+  /* Small phone (≤390px) */
+  @media (max-width: 390px) {
+    .wrap { padding: 0 16px; }
+    .hero-copy h1 { font-size: 24px; }
+    .metric-side .num { font-size: 20px; }
+    .cost td.num { width: 100%; }
   }
 </style>
 </head>

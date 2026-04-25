@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Noor — Voice AI for Clinics in Dubai</title>
+
+<!--
+  BRAND NAME CANDIDATES (generated before build):
+  1. Noor — Arabic for "light". Short, warm, recognisable to Dubai patients and staff, evokes clarity.
+  2. Calma — Suggests a calm waiting room and a steady voice on the line.
+  3. Vela — Latin root for "sail"; implies quiet, steady movement and guidance.
+  4. Medira — A constructed name that leans medical without being literal; easy to say in Arabic.
+  5. Aria — A single clear voice; short, memorable, neutral across languages.
+
+  CHOSEN: Noor. It is one syllable, common and respectful in the UAE, and carries the idea
+  of clarity without shouting "AI" or "tech". Used as the wordmark throughout.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --soft: #EAF4FB;
+    --accent: #1A73E8;
+    --text: #1A1A2E;
+    --muted: #5A5A6E;
+    --line: #E5E7EB;
+    --green: #0F9D58;
+    --green-soft: #E6F4EA;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- HEADER / HERO ---------- */
+  header {
+    padding: 24px 0;
+  }
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .wordmark {
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .wordmark-dot {
+    color: var(--accent);
+  }
+
+  .hero {
+    padding: 48px 0 88px;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .hero-copy h1 {
+    font-size: clamp(32px, 4.6vw, 48px);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    font-weight: 700;
+    max-width: 16ch;
+  }
+  .hero-copy p {
+    margin-top: 20px;
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 46ch;
+  }
+
+  /* ---------- PHONE DEMO ---------- */
+  .phone-demo {
+    display: flex;
+    justify-content: center;
+  }
+  .phone {
+    width: 100%;
+    max-width: 300px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 40px;
+    box-shadow: 0 24px 60px -12px rgba(26, 115, 232, 0.22),
+                0 8px 24px rgba(10, 25, 47, 0.06);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .phone::before {
+    content: "";
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 72px;
+    height: 20px;
+    background: #0F1220;
+    border-radius: 20px;
+    z-index: 2;
+  }
+  .phone-screen {
+    background: #FAFBFC;
+    border-radius: 30px;
+    padding: 48px 18px 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 480px;
+  }
+  .phone-header {
+    text-align: center;
+    padding-bottom: 10px;
+  }
+  .phone-header .who {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .phone-header .timer {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .live-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: live-blink 1.4s ease-in-out infinite;
+  }
+  @keyframes live-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
+  }
+  .waveform {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    height: 30px;
+    margin: 6px 0 14px;
+  }
+  .waveform .bar {
+    width: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+    animation: wave 0.9s ease-in-out infinite;
+    transform-origin: center;
+  }
+  .waveform .bar:nth-child(1) { height: 30%; animation-delay: 0.0s; }
+  .waveform .bar:nth-child(2) { height: 60%; animation-delay: 0.08s; }
+  .waveform .bar:nth-child(3) { height: 85%; animation-delay: 0.16s; }
+  .waveform .bar:nth-child(4) { height: 45%; animation-delay: 0.24s; }
+  .waveform .bar:nth-child(5) { height: 95%; animation-delay: 0.32s; }
+  .waveform .bar:nth-child(6) { height: 55%; animation-delay: 0.4s; }
+  .waveform .bar:nth-child(7) { height: 80%; animation-delay: 0.48s; }
+  .waveform .bar:nth-child(8) { height: 35%; animation-delay: 0.56s; }
+  .waveform .bar:nth-child(9) { height: 70%; animation-delay: 0.64s; }
+  @keyframes wave {
+    0%, 100% { transform: scaleY(0.6); opacity: 0.5; }
+    50% { transform: scaleY(1.6); opacity: 1; }
+  }
+  .waveform.idle .bar {
+    animation-play-state: paused;
+    opacity: 0.25;
+    transform: scaleY(0.4);
+  }
+  .convo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 6px;
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, transparent 0, #000 40px);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 40px);
+  }
+  .bubble {
+    font-size: 12.5px;
+    line-height: 1.45;
+    padding: 9px 12px;
+    border-radius: 14px;
+    max-width: 88%;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .bubble.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .bubble.ai {
+    background: var(--soft);
+    color: var(--text);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .bubble.patient {
+    background: var(--accent);
+    color: #fff;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+  .bubble .label {
+    display: block;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+    opacity: 0.65;
+  }
+  .phone-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 14px;
+    padding: 6px 0 2px;
+  }
+  .pill {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3a3a4a;
+  }
+  .pill svg { width: 16px; height: 16px; }
+  .pill.end {
+    width: 48px;
+    height: 48px;
+    background: #E54545;
+    border-color: #E54545;
+    color: #fff;
+  }
+  .pill.end svg {
+    width: 20px;
+    height: 20px;
+    transform: rotate(135deg);
+  }
+  .cta {
+    display: inline-block;
+    margin-top: 32px;
+    background: var(--accent);
+    color: #fff;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+    font-family: inherit;
+  }
+  .cta:hover { background: #155fc4; }
+  .cta:focus-visible {
+    outline: 3px solid #8ab8f2;
+    outline-offset: 2px;
+  }
+  .cta.secondary {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+  .cta.secondary:hover { background: var(--soft); }
+
+  /* ---------- METRICS ---------- */
+  .metrics {
+    background: var(--soft);
+    padding: 64px 0;
+  }
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .metric {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #DCEAF6;
+  }
+  .metric-label {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: 16px;
+  }
+  .metric-side { flex: 1; }
+  .metric-side small {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .metric-side .num {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .metric-side.ai .num { color: var(--accent); }
+  .metric-arrow {
+    color: var(--muted);
+    font-size: 18px;
+    padding: 0 10px;
+  }
+  .metric-delta {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  /* ---------- SECTIONS SHARED ---------- */
+  section { padding: 88px 0; }
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  h2 {
+    font-size: clamp(26px, 3.2vw, 36px);
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    max-width: 22ch;
+  }
+  .section-sub {
+    margin-top: 12px;
+    color: var(--muted);
+    max-width: 58ch;
+  }
+
+  /* ---------- COST TABLE ---------- */
+  .cost-wrap { margin-top: 40px; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; }
+  table.cost {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .cost thead th {
+    background: #F7F9FC;
+    padding: 18px 20px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+  }
+  .cost thead th.ai-col { color: var(--accent); }
+  .cost td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    vertical-align: top;
+  }
+  .cost tr:nth-child(even) td { background: #FAFBFC; }
+  .cost tr:last-child td { border-bottom: none; }
+  .cost td.label {
+    font-weight: 500;
+    color: var(--text);
+    width: 40%;
+  }
+  .cost td.num {
+    font-variant-numeric: tabular-nums;
+  }
+  .cost tr.total td {
+    font-weight: 700;
+    background: #F4F7FA !important;
+  }
+  .cost tr.savings td {
+    background: var(--green-soft) !important;
+    color: var(--green);
+    font-weight: 700;
+  }
+  .cost-note {
+    margin-top: 24px;
+    padding: 20px 24px;
+    background: var(--soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .cost-note strong {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* ---------- PRICING (single plan) ---------- */
+  .plan {
+    margin-top: 40px;
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    padding: 40px;
+    background: #fff;
+    box-shadow: 0 8px 32px rgba(26, 115, 232, 0.10);
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .plan h3 {
+    font-size: 22px;
+    font-weight: 600;
+  }
+  .plan .who {
+    color: var(--muted);
+    font-size: 15px;
+    margin-top: 8px;
+  }
+  .plan ul {
+    list-style: none;
+    margin: 24px 0 0;
+    padding: 0;
+  }
+  .plan li {
+    font-size: 15px;
+    padding: 8px 0 8px 22px;
+    position: relative;
+    color: var(--text);
+  }
+  .plan li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 16px;
+    width: 12px;
+    height: 2px;
+    background: var(--accent);
+  }
+  .price-block {
+    background: var(--soft);
+    border-radius: 12px;
+    padding: 28px;
+  }
+  .price-row {
+    padding: 16px 0;
+    border-bottom: 1px solid #D3E3F2;
+  }
+  .price-row:first-child { padding-top: 0; }
+  .price-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .price-row .label {
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .price-row .usd {
+    margin-top: 8px;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .price-row .usd small {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .price-row .aed {
+    margin-top: 4px;
+    font-size: 14px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .plan button {
+    width: 100%;
+    margin-top: 24px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-family: inherit;
+    transition: background 0.15s ease;
+  }
+  .plan button:hover { background: #155fc4; }
+  .plan button:focus-visible { outline: 3px solid #8ab8f2; outline-offset: 2px; }
+
+  /* ---------- HOW IT WORKS ---------- */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 40px;
+  }
+  .step {
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  .step .num {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  .step svg {
+    width: 36px;
+    height: 36px;
+    color: var(--accent);
+    margin: 14px 0 18px;
+    display: block;
+  }
+  .step p {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  /* ---------- USE CASES TABS ---------- */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--line);
+  }
+  .tab {
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: inherit;
+    margin-bottom: -1px;
+  }
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .tab:focus-visible { outline: 3px solid #8ab8f2; outline-offset: 2px; }
+  .panel { display: none; margin-top: 28px; }
+  .panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .dialogue {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+    background: #fff;
+  }
+  .line {
+    font-size: 14.5px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  .line:last-child { margin-bottom: 0; }
+  .line .who {
+    display: inline-block;
+    min-width: 64px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .line.ai .who { color: var(--accent); }
+
+  /* ---------- SOCIAL PROOF ---------- */
+  .proof { background: var(--soft); }
+  .quote {
+    background: #fff;
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 680px;
+    border: 1px solid #DCEAF6;
+  }
+  .quote p {
+    font-size: 18px;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .quote .who {
+    margin-top: 16px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .logos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .logo-box {
+    height: 72px;
+    background: #D8E6F2;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6B7D92;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .pilot {
+    margin-top: 32px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .pilot .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    padding: 88px 0 40px;
+    border-top: 1px solid var(--line);
+  }
+  .footer-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 520px;
+  }
+  .footer-cta h2 {
+    margin-bottom: 20px;
+  }
+  .email-row {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .email-row input {
+    flex: 1;
+    padding: 13px 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text);
+  }
+  .email-row input:focus {
+    outline: 3px solid #8ab8f2;
+    outline-offset: 0;
+    border-color: var(--accent);
+  }
+  .email-row button {
+    padding: 13px 20px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .email-row button:hover { background: #155fc4; }
+  .email-row button:focus-visible { outline: 3px solid #8ab8f2; outline-offset: 2px; }
+  .privacy {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+  .footer-bottom {
+    margin-top: 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .footer-bottom .wordmark { font-size: 20px; }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 48px; padding: 32px 0 72px; }
+    .hero-copy h1 { max-width: 20ch; }
+    .phone-demo { order: 2; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .plan { grid-template-columns: 1fr; gap: 28px; padding: 28px; }
+    .steps { grid-template-columns: 1fr; }
+    .panel.active { grid-template-columns: 1fr; }
+    .logos { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 640px) {
+    section { padding: 64px 0; }
+    .hero { padding: 48px 0 64px; }
+    .metrics-grid { grid-template-columns: 1fr; }
+
+    /* Stack cost table */
+    .cost thead { display: none; }
+    .cost, .cost tbody, .cost tr, .cost td { display: block; width: 100%; }
+    .cost tr {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 0;
+    }
+    .cost tr:last-child { border-bottom: none; }
+    .cost td {
+      border: none;
+      padding: 6px 20px;
+    }
+    .cost td.label {
+      width: 100%;
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding-top: 12px;
+    }
+    .cost td.num::before {
+      content: attr(data-col) " · ";
+      color: var(--muted);
+      font-weight: 500;
+      margin-right: 4px;
+    }
+    .email-row { flex-direction: column; }
+    .footer-bottom { flex-direction: column; gap: 16px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====================== SECTION 1 — HERO ====================== -->
+<header>
+  <div class="wrap nav">
+    <a href="#" class="wordmark">Noor<span class="wordmark-dot">.</span></a>
+    <a href="#demo" class="cta secondary" style="margin-top:0; padding: 10px 18px; font-size: 14px; text-decoration:none;">Book a Demo</a>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <div class="hero-copy">
+    <h1>Your clinic phone, always picked up.</h1>
+    <p>Noor picks up when your front desk can't. It books appointments, answers the usual questions, and flags anything urgent — in English or Arabic, day or night.</p>
+    <button class="cta" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Book a Free Demo</button>
+  </div>
+
+  <div class="phone-demo" aria-hidden="true">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="phone-header">
+          <div class="who">Noor<span class="live-dot"></span></div>
+          <div class="timer" id="demoTimer">00:00</div>
+        </div>
+        <div class="waveform" id="demoWave">
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
+        <div class="convo" id="demoConvo"></div>
+        <div class="phone-controls">
+          <div class="pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
+          </div>
+          <div class="pill end">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57a1 1 0 0 0-1.02.24l-1.57 1.57a15.07 15.07 0 0 1-6.58-6.58l1.57-1.58a1 1 0 0 0 .25-1.01A11.36 11.36 0 0 1 8.5 4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1c0 9.39 7.61 17 17 17a1 1 0 0 0 1-1v-3.5a1 1 0 0 0-1-1z"/></svg>
+          </div>
+          <div class="pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ✅ HERO complete -->
+
+
+<!-- ====================== SECTION 2 — IMPACT METRICS ====================== -->
+<section class="metrics" id="metrics">
+  <div class="wrap">
+    <span class="eyebrow">The gap</span>
+    <h2>What changes when nobody waits on hold.</h2>
+
+    <div class="metrics-grid" id="metricsGrid">
+
+      <!-- Metric 1: Calls handled per day -->
+      <div class="metric">
+        <div class="metric-label">Calls handled / day</div>
+        <div class="metric-row">
+          <div class="metric-side">
+            <small>Human receptionist</small>
+            <!-- Source: Ruby Receptionists Small Business Call Data Report, 2022. VERIFY -->
+            <!-- VERIFY: commonly cited industry range is 40–60 calls/day per medical front desk -->
+            <span class="num" data-target="50" data-suffix="">0</span>
+          </div>
+          <div class="metric-arrow">→</div>
+          <div class="metric-side ai">
+            <small>Noor</small>
+            <!-- Concurrent voice agents can handle hundreds of parallel calls; 1,000/day is a conservative single-line figure. VERIFY -->
+            <span class="num" data-target="1000" data-suffix="+">0</span>
+          </div>
+        </div>
+        <div class="metric-delta">20× daily capacity</div>
+      </div>
+
+      <!-- Metric 2: Response time -->
+      <div class="metric">
+        <div class="metric-label">Time to answer</div>
+        <div class="metric-row">
+          <div class="metric-side">
+            <small>Human receptionist</small>
+            <!-- Source: Invoca Inbound Call Benchmark, 2023 — average healthcare answer time ~20s. VERIFY -->
+            <span class="num" data-target="20" data-suffix="s">0</span>
+          </div>
+          <div class="metric-arrow">→</div>
+          <div class="metric-side ai">
+            <small>Noor</small>
+            <!-- Modern low-latency voice stacks answer sub-second; <1s is the accepted benchmark -->
+            <span class="num" data-target="1" data-suffix="s" data-prefix="&lt;">0</span>
+          </div>
+        </div>
+        <div class="metric-delta">Patients stop waiting</div>
+      </div>
+
+      <!-- Metric 3: Availability -->
+      <div class="metric">
+        <div class="metric-label">Hours available / day</div>
+        <div class="metric-row">
+          <div class="metric-side">
+            <small>Human shift</small>
+            <!-- UAE Labour Law, Federal Decree-Law No. 33 of 2021: 8-hour standard working day -->
+            <span class="num" data-target="8" data-suffix="h">0</span>
+          </div>
+          <div class="metric-arrow">→</div>
+          <div class="metric-side ai">
+            <small>Noor</small>
+            <span class="num" data-target="24" data-suffix="h">0</span>
+          </div>
+        </div>
+        <div class="metric-delta">Nights, Fridays, public holidays</div>
+      </div>
+
+      <!-- Metric 4: Missed call rate -->
+      <div class="metric">
+        <div class="metric-label">Missed calls</div>
+        <div class="metric-row">
+          <div class="metric-side">
+            <small>Before</small>
+            <!-- Source: Accenture Health 2019 — ~30% of medical practice calls go unanswered at peak. VERIFY -->
+            <span class="num" data-target="30" data-suffix="%">0</span>
+          </div>
+          <div class="metric-arrow">→</div>
+          <div class="metric-side ai">
+            <small>With Noor</small>
+            <!-- Defensible conservative figure; real-world pilots report sub-5% unresolved. VERIFY -->
+            <span class="num" data-target="3" data-suffix="%" data-prefix="&lt;">0</span>
+          </div>
+        </div>
+        <div class="metric-delta">Roughly 9 in 10 recovered</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<!-- ✅ IMPACT METRICS complete -->
+
+
+<!-- ====================== SECTION 3 — COST COMPARISON ====================== -->
+<section>
+  <div class="wrap">
+    <span class="eyebrow">The math</span>
+    <h2>A year at the front desk, priced two ways.</h2>
+    <p class="section-sub">Numbers below are for one clinic line in Dubai. Leave and gratuity follow UAE labour law (Federal Decree-Law No. 33 of 2021).</p>
+
+    <div class="cost-wrap">
+      <table class="cost">
+        <thead>
+          <tr>
+            <th>Line item</th>
+            <th>Human receptionist (Dubai)</th>
+            <th class="ai-col">Noor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label">Monthly base salary</td>
+            <!-- Source: Bayt.com UAE Salary Guide 2024 — medical receptionist range AED 4,000–6,000. Using lower bound. VERIFY -->
+            <td class="num" data-col="Human">AED 4,000</td>
+            <td class="num" data-col="Noor">—</td>
+          </tr>
+          <tr>
+            <td class="label">Visa, insurance, end-of-service gratuity</td>
+            <!-- EOSB per UAE Labour Law = ~21 days/year (≈5.8% of salary). Visa + medical insurance typically ~AED 5–7k/year. Combined ~15% of base salary. VERIFY -->
+            <td class="num" data-col="Human">AED 600 / mo</td>
+            <td class="num" data-col="Noor">—</td>
+          </tr>
+          <tr>
+            <td class="label">Annual leave and sick cover</td>
+            <!-- UAE Labour Law: 30 calendar days annual leave + sick leave entitlement. Cover cost ~AED 200/day × 30 = AED 6,000/yr ≈ AED 500/mo. VERIFY -->
+            <td class="num" data-col="Human">AED 500 / mo</td>
+            <td class="num" data-col="Noor">—</td>
+          </tr>
+          <tr>
+            <td class="label">One-time onboarding and training</td>
+            <!-- Estimated recruitment + two-week training; amortised over year one. VERIFY -->
+            <td class="num" data-col="Human">AED 2,000</td>
+            <td class="num" data-col="Noor">AED 0</td>
+          </tr>
+          <tr>
+            <td class="label">Noor one-time setup</td>
+            <td class="num" data-col="Human">—</td>
+            <!-- $300 × 3.6725 ≈ AED 1,101 -->
+            <td class="num" data-col="Noor">AED 1,101 ($300)</td>
+          </tr>
+          <tr>
+            <td class="label">Noor subscription</td>
+            <td class="num" data-col="Human">—</td>
+            <!-- $500 × 3.6725 ≈ AED 1,836 / month -->
+            <td class="num" data-col="Noor">AED 1,836 / mo ($500)</td>
+          </tr>
+          <tr class="total">
+            <td class="label">Total first-year cost</td>
+            <!-- (4000 + 600 + 500) × 12 + 2000 = 63,200 -->
+            <td class="num" data-col="Human">AED 63,200</td>
+            <!-- 1,101 setup + (1,836 × 12) = 1,101 + 22,032 = 23,133 -->
+            <td class="num" data-col="Noor">AED 23,133</td>
+          </tr>
+          <tr class="savings">
+            <td class="label">Annual saving</td>
+            <td class="num" data-col="Human">—</td>
+            <!-- 63,200 − 23,133 = 40,067; 40,067 / 63,200 ≈ 63.4% -->
+            <td class="num" data-col="Noor">AED 40,067 · 63%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cost-note">And that's before you count the <strong>missed calls after hours, during lunch, on weekends</strong> — the bookings that never reach your calendar. For most clinics, that's where the bigger loss actually sits.</p>
+  </div>
+</section>
+<!-- ✅ COST TABLE complete -->
+
+
+<!-- ====================== SECTION 4 — PRICING ====================== -->
+<section id="pricing" style="background:#FAFBFC;">
+  <div class="wrap">
+    <span class="eyebrow">Pricing</span>
+    <h2>One plan. Unlimited calls.</h2>
+    <p class="section-sub">No tiers, no per-minute fees, no call caps. The setup fee covers onboarding and number routing. After that, you pay the same whether Noor takes 50 calls or 5,000.</p>
+
+    <div class="plan">
+      <div>
+        <h3>Noor for Clinics</h3>
+        <p class="who">Made for dental, cosmetic, and polyclinic practices across the UAE.</p>
+        <ul>
+          <li>Unlimited inbound calls</li>
+          <li>Speaks English and Arabic</li>
+          <li>Books straight into your calendar or PMS</li>
+          <li>Daily summaries, urgent calls flagged right away</li>
+        </ul>
+      </div>
+
+      <div class="price-block">
+        <div class="price-row">
+          <div class="label">One-time setup</div>
+          <!-- USD → AED at the UAE peg of 3.6725. $300 ≈ AED 1,101 -->
+          <div class="usd">$300 <small>one-time</small></div>
+          <div class="aed">≈ AED 1,101</div>
+        </div>
+        <div class="price-row">
+          <div class="label">Monthly</div>
+          <!-- $500 × 3.6725 ≈ AED 1,836 -->
+          <div class="usd">$500 <small>/ month</small></div>
+          <div class="aed">≈ AED 1,836 / month</div>
+        </div>
+        <button onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Book a Free Demo</button>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ✅ PRICING complete -->
+
+
+<!-- ====================== SECTION 5 — HOW IT WORKS ====================== -->
+<section>
+  <div class="wrap">
+    <span class="eyebrow">How it works</span>
+    <h2>From a ringing phone to a booked chair.</h2>
+
+    <div class="steps">
+      <div class="step">
+        <span class="num">01</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92Z"/></svg>
+        <p>A patient dials your clinic number.</p>
+      </div>
+      <div class="step">
+        <span class="num">02</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 10v4"/><path d="M12 8v8"/><path d="M16 11v2"/></svg>
+        <p>Noor picks up, takes the booking, and flags anything urgent.</p>
+      </div>
+      <div class="step">
+        <span class="num">03</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
+        <p>Your calendar fills in. A short summary lands in your inbox.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ✅ HOW IT WORKS complete -->
+
+
+<!-- ====================== SECTION 6 — USE CASE TABS ====================== -->
+<section style="background:#FAFBFC;">
+  <div class="wrap">
+    <span class="eyebrow">Sample calls</span>
+    <h2>How Noor actually sounds on a call.</h2>
+
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-tab="dental" role="tab">Dental clinic</button>
+      <button class="tab" data-tab="cosmetic" role="tab">Cosmetic surgery</button>
+      <button class="tab" data-tab="poly" role="tab">Polyclinic</button>
+    </div>
+
+    <div class="panel active" id="panel-dental">
+      <div class="dialogue">
+        <div class="line"><span class="who">Patient:</span> I think I chipped a molar last night. Can I come in today?</div>
+        <div class="line ai"><span class="who">Noor:</span> Dr. Fares has an opening at 3:40 PM at the Jumeirah branch. Shall I book that for you?</div>
+      </div>
+      <div class="dialogue">
+        <div class="line"><span class="who">Patient:</span> Do you do Invisalign, and how much is the first consultation?</div>
+        <div class="line ai"><span class="who">Noor:</span> Yes. The first consultation is AED 300 and takes about thirty minutes. Would you like the next slot this week?</div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-cosmetic">
+      <div class="dialogue">
+        <div class="line"><span class="who">Patient:</span> I want to ask about rhinoplasty pricing but I'd rather not leave my number.</div>
+        <div class="line ai"><span class="who">Noor:</span> Understood. Consultations start at AED 500 and the surgeon will quote during that visit. I can book you under a first name only.</div>
+      </div>
+      <div class="dialogue">
+        <div class="line"><span class="who">Patient:</span> My filler appointment is tomorrow. Can I push it to next week?</div>
+        <div class="line ai"><span class="who">Noor:</span> I see your booking with Dr. Sara at 11 AM. The next available slot is Tuesday at 2 PM. Shall I move it?</div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-poly">
+      <div class="dialogue">
+        <div class="line"><span class="who">Patient:</span> My son has a fever of 39. Which doctor should I see?</div>
+        <div class="line ai"><span class="who">Noor:</span> That should be paediatrics. Dr. Amani has a slot in forty minutes at the Al Barsha clinic. I'm marking this as urgent for the front desk.</div>
+      </div>
+      <div class="dialogue">
+        <div class="line"><span class="who">Patient:</span> Do you accept Daman insurance for a dermatology visit?</div>
+        <div class="line ai"><span class="who">Noor:</span> Yes, Daman is accepted for dermatology. Please bring your card and Emirates ID. Shall I book you in?</div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ✅ USE CASES complete -->
+
+
+<!-- ====================== SECTION 8 — FOOTER CTA ====================== -->
+<footer id="demo">
+  <div class="wrap">
+    <div class="footer-cta">
+      <h2>Hear Noor take a call from your own clinic line.</h2>
+      <button class="cta" onclick="handleDemoClick()">Book a Free Demo</button>
+
+      <div class="email-row" style="margin-top: 20px;">
+        <input type="email" id="emailInput" placeholder="you@yourclinic.ae" onchange="handleEmailChange(event)" aria-label="Email address">
+        <button onclick="handleEmailSubmit()">Send</button>
+      </div>
+      <p class="privacy">No spam. No sales calls unless you ask for one.</p>
+    </div>
+
+    <div class="footer-bottom">
+      <a href="#" class="wordmark">Noor<span class="wordmark-dot">.</span></a>
+      <div>© 2026 Noor. Dubai, UAE.</div>
+    </div>
+  </div>
+</footer>
+<!-- ✅ FOOTER complete -->
+
+
+<script>
+  // ---------- Counter animation on scroll ----------
+  const nums = document.querySelectorAll('#metricsGrid .num');
+  const animateNum = (el) => {
+    const target = parseFloat(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const prefix = el.dataset.prefix || '';
+    const duration = 1100;
+    const startTime = performance.now();
+    const step = (now) => {
+      const p = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const value = target < 10 ? (target * eased).toFixed(0) : Math.floor(target * eased);
+      el.textContent = prefix + value + suffix;
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = prefix + target + suffix;
+    };
+    requestAnimationFrame(step);
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.dataset.done) {
+        entry.target.dataset.done = "1";
+        entry.target.querySelectorAll('.num').forEach(animateNum);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.35 });
+  observer.observe(document.getElementById('metricsGrid'));
+
+  // ---------- Tabs ----------
+  const tabs = document.querySelectorAll('.tab');
+  const panels = {
+    dental: document.getElementById('panel-dental'),
+    cosmetic: document.getElementById('panel-cosmetic'),
+    poly: document.getElementById('panel-poly')
+  };
+  tabs.forEach(btn => {
+    btn.onclick = () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      Object.values(panels).forEach(p => p.classList.remove('active'));
+      panels[btn.dataset.tab].classList.add('active');
+    };
+  });
+
+  // ---------- Hero phone demo (looping call animation) ----------
+  (function() {
+    const script = [
+      { t: 1,  who: 'ai',      text: "Hi, thanks for calling Care Plus Clinic. How can I help?" },
+      { t: 3,  who: 'patient', text: "I'd like to book with Dr. Sara for a cleaning." },
+      { t: 5,  who: 'ai',      text: "Sure. What day works for you?" },
+      { t: 7,  who: 'patient', text: "Tomorrow at 10 AM if possible." },
+      { t: 9,  who: 'ai',      text: "Booked. Tomorrow, 10 AM with Dr. Sara. Want a reminder?" },
+      { t: 11, who: 'patient', text: "Yes, please." },
+      { t: 13, who: 'ai',      text: "Done. See you tomorrow." }
+    ];
+    const END = 15;
+    const TICK_MS = 750;
+    const timerEl = document.getElementById('demoTimer');
+    const convoEl = document.getElementById('demoConvo');
+    const waveEl  = document.getElementById('demoWave');
+    if (!timerEl || !convoEl || !waveEl) return;
+
+    let elapsed = 0;
+    let idx = 0;
+    let speakingUntil = 0;
+
+    const fmt = (s) => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+
+    const reset = () => {
+      elapsed = 0;
+      idx = 0;
+      speakingUntil = 0;
+      convoEl.innerHTML = '';
+      timerEl.textContent = '00:00';
+      waveEl.classList.add('idle');
+    };
+
+    const tick = () => {
+      elapsed++;
+      timerEl.textContent = fmt(elapsed);
+
+      while (idx < script.length && script[idx].t <= elapsed) {
+        const msg = script[idx];
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble ' + msg.who;
+        const label = document.createElement('span');
+        label.className = 'label';
+        label.textContent = msg.who === 'ai' ? 'Noor' : 'Patient';
+        bubble.appendChild(label);
+        bubble.appendChild(document.createTextNode(msg.text));
+        convoEl.appendChild(bubble);
+        while (convoEl.children.length > 3) convoEl.firstChild.remove();
+        requestAnimationFrame(() => bubble.classList.add('show'));
+        speakingUntil = elapsed + Math.max(2, Math.round(msg.text.length / 18));
+        if (msg.who === 'ai') waveEl.classList.remove('idle');
+        else waveEl.classList.add('idle');
+        idx++;
+      }
+
+      if (elapsed >= speakingUntil) waveEl.classList.add('idle');
+
+      if (elapsed >= END) {
+        setTimeout(reset, 1800);
+        clearInterval(loopId);
+        setTimeout(() => { loopId = setInterval(tick, TICK_MS); }, 2000);
+      }
+    };
+
+    waveEl.classList.add('idle');
+    let loopId = setInterval(tick, TICK_MS);
+  })();
+
+  // ---------- Footer handlers (UI only) ----------
+  function handleDemoClick() {
+    document.getElementById('emailInput').focus();
+  }
+  function handleEmailChange(e) {
+    // UI only — no submit
+  }
+  function handleEmailSubmit() {
+    const input = document.getElementById('emailInput');
+    if (input.value && input.value.includes('@')) {
+      input.value = '';
+      input.placeholder = "Thanks — we'll be in touch.";
+    } else {
+      input.focus();
+    }
+  }
+</script>
+
+</body>
+</html>

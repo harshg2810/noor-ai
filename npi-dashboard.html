@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NPI Registry Explorer — Noor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ---- tokens ---------------------------------------------------------- */
+  :root{
+    --bg:#F5F8FC; --card:#FFFFFF; --soft:#EAF4FB;
+    --accent:#1A73E8; --accent-ink:#0D4EA3;
+    --btn-bg:#1A73E8; --btn-hover:#0D4EA3; --btn-ink:#FFFFFF;
+    --text:#1A1A2E; --muted:#5A5A6E; --line:#E5E7EB;
+    --green:#0F9D58; --green-soft:#E6F4EA;
+    --amber:#8A6100; --amber-soft:#FDF3DA;
+    --surface-1:#FFFFFF;      /* chart surface */
+    --series-1:#1A73E8;       /* validated: lightness, chroma, 3:1 vs surface */
+    --series-dim:#B7D3F6;     /* de-emphasised bars */
+    --grid:#ECEEF2;
+    --shadow:0 1px 2px rgba(16,24,40,.04), 0 8px 24px rgba(16,24,40,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0E0E16; --card:#171722; --soft:#1B2434;
+      --accent:#5B9CF5; --accent-ink:#9CC3F9;
+      --btn-bg:#1A6FE0; --btn-hover:#2F82F0; --btn-ink:#FFFFFF;
+      --text:#F2F3F7; --muted:#A2A3B4; --line:#2A2A3A;
+      --green:#4ECB8B; --green-soft:#132A20;
+      --amber:#E9C46A; --amber-soft:#2A2415;
+      --surface-1:#171722;
+      --series-1:#3987E5;
+      --series-dim:#1C5CAB;
+      --grid:#242433;
+      --shadow:none;
+    }
+  }
+
+  /* ---- base ------------------------------------------------------------ */
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:28px 20px 64px}
+  h1{font-size:26px; line-height:1.2; margin:0 0 4px; letter-spacing:-.02em}
+  h2{font-size:15px; margin:0; letter-spacing:-.01em}
+  a{color:var(--accent)}
+  .sub{color:var(--muted); font-size:14px; margin:0}
+  header.top{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:22px; flex-wrap:wrap}
+  .badge{display:inline-flex; align-items:center; gap:6px; background:var(--soft); color:var(--accent-ink);
+         font-size:12px; font-weight:600; padding:5px 10px; border-radius:999px; white-space:nowrap}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); padding:18px}
+  .card + .card{margin-top:16px}
+  .card-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px}
+  .card-head .sub{font-size:13px}
+
+  /* ---- form ------------------------------------------------------------ */
+  form{display:grid; grid-template-columns:repeat(auto-fit,minmax(165px,1fr)); gap:12px; align-items:end}
+  .field{display:flex; flex-direction:column; gap:6px; min-width:0}
+  label{font-size:12px; font-weight:600; color:var(--muted); letter-spacing:.01em}
+  input,select{
+    font:inherit; font-size:14px; color:var(--text); background:var(--card);
+    border:1px solid var(--line); border-radius:9px; padding:9px 10px; width:100%; min-width:0;
+  }
+  input:focus,select:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:transparent}
+  button{font:inherit; cursor:pointer}
+  .btn{
+    background:var(--btn-bg); color:var(--btn-ink); border:1px solid transparent; border-radius:9px;
+    padding:10px 16px; font-size:14px; font-weight:600; white-space:nowrap;
+  }
+  .btn:hover{background:var(--btn-hover)}
+  .btn[disabled]{opacity:.55; cursor:progress}
+  .btn.ghost{background:transparent; color:var(--text); border-color:var(--line); font-weight:500}
+  .btn.ghost:hover{background:var(--soft); color:var(--accent-ink)}
+  .hint{font-size:12px; color:var(--muted); margin:12px 2px 0}
+
+  /* ---- notices --------------------------------------------------------- */
+  .notice{margin-top:14px; border-radius:10px; padding:11px 13px; font-size:13.5px; display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap}
+  .notice.warn{background:var(--amber-soft); color:var(--amber); border:1px solid transparent}
+  .notice.info{background:var(--soft); color:var(--accent-ink)}
+  .notice strong{font-weight:600}
+  .notice .btn{padding:6px 11px; font-size:13px}
+
+  /* ---- stat tiles ------------------------------------------------------ */
+  .tiles{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:16px}
+  .tile{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; box-shadow:var(--shadow)}
+  .tile .k{font-size:12px; font-weight:600; color:var(--muted); margin-bottom:5px}
+  .tile .v{font-size:26px; font-weight:700; letter-spacing:-.02em; font-variant-numeric:tabular-nums; line-height:1.15}
+  .tile .v small{font-size:13px; font-weight:500; color:var(--muted); letter-spacing:0}
+  @media(max-width:760px){ .tiles{grid-template-columns:repeat(2,1fr)} }
+
+  /* ---- chips ----------------------------------------------------------- */
+  .chips{display:flex; gap:8px; flex-wrap:wrap}
+  .chip{
+    background:transparent; border:1px solid var(--line); color:var(--muted);
+    border-radius:999px; padding:6px 12px; font-size:13px; font-weight:500;
+  }
+  .chip:hover{border-color:var(--accent); color:var(--accent)}
+  .chip[aria-pressed="true"]{background:var(--btn-bg); border-color:var(--btn-bg); color:var(--btn-ink); font-weight:600}
+
+  /* ---- chart ----------------------------------------------------------- */
+  .chart-wrap{position:relative}
+  #chart{display:block; width:100%; touch-action:pan-y}
+  #chart .band:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+  .tip{
+    position:absolute; pointer-events:none; opacity:0; transform:translate(-50%,-100%);
+    background:var(--text); color:var(--card); font-size:12px; line-height:1.45;
+    padding:7px 10px; border-radius:8px; white-space:nowrap; transition:opacity .1s ease; z-index:5;
+  }
+  .tip b{font-weight:600}
+
+  /* ---- table ----------------------------------------------------------- */
+  .table-wrap{overflow-x:auto; margin:0 -18px -18px; padding:0 2px}
+  table{border-collapse:collapse; width:100%; font-size:13.5px; min-width:900px}
+  th,td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top}
+  th{
+    font-size:12px; font-weight:600; color:var(--muted); white-space:nowrap;
+    position:sticky; top:0; background:var(--card); z-index:1;
+  }
+  th.sortable{cursor:pointer; user-select:none}
+  th.sortable:hover{color:var(--accent)}
+  th .arrow{opacity:.4; font-size:9px; margin-left:3px}
+  th[aria-sort] .arrow{opacity:1; color:var(--accent)}
+  tbody tr:hover{background:var(--soft)}
+  td.name{font-weight:600; min-width:210px}
+  td.npi{font-variant-numeric:tabular-nums; white-space:nowrap}
+  td.date{white-space:nowrap; font-variant-numeric:tabular-nums}
+  td.muted{color:var(--muted)}
+  .pill{display:inline-block; font-size:11px; font-weight:600; padding:2px 7px; border-radius:999px; white-space:nowrap}
+  .pill.org{background:var(--soft); color:var(--accent-ink)}
+  .pill.ind{background:var(--line); color:var(--muted)}
+  .pill.new{background:var(--green-soft); color:var(--green); margin-left:6px}
+  .scroll-hint{display:none; font-size:12px; color:var(--muted); margin-top:10px}
+  @media(max-width:760px){ .scroll-hint{display:block} }
+  .empty{text-align:center; color:var(--muted); padding:38px 10px; font-size:14px}
+  #empty{margin-top:18px}
+  .empty b{display:block; color:var(--text); font-size:15px; margin-bottom:4px}
+  .hidden{display:none !important}
+
+  details.help{margin-top:18px; font-size:13.5px; color:var(--muted)}
+  details.help summary{cursor:pointer; font-weight:600; color:var(--text)}
+  details.help ul{margin:10px 0 0; padding-left:18px}
+  details.help li{margin-bottom:6px}
+  footer{margin-top:26px; font-size:12.5px; color:var(--muted); text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>NPI Registry Explorer</h1>
+      <p class="sub">Find healthcare providers by state &amp; city, and see when they were issued their NPI.</p>
+    </div>
+    <span class="badge">Live data · NPPES API v2.1</span>
+  </header>
+
+  <!-- ---------- search ---------- -->
+  <section class="card">
+    <form id="search-form" autocomplete="off">
+      <div class="field">
+        <label for="f-state">State</label>
+        <select id="f-state"><option value="">Select a state…</option></select>
+      </div>
+      <div class="field">
+        <label for="f-city">City</label>
+        <input id="f-city" type="text" placeholder="e.g. San Diego" />
+      </div>
+      <div class="field">
+        <label for="f-zip">ZIP code <span style="font-weight:400">(optional)</span></label>
+        <input id="f-zip" type="text" placeholder="e.g. 92101 or 921*" />
+      </div>
+      <div class="field">
+        <label for="f-tax">Specialty <span style="font-weight:400">(optional)</span></label>
+        <input id="f-tax" type="text" placeholder="e.g. Dentist, Pediatric*" />
+      </div>
+      <div class="field">
+        <label for="f-type">Provider type</label>
+        <select id="f-type">
+          <option value="">Clinics &amp; individuals</option>
+          <option value="NPI-2">Clinics / organisations</option>
+          <option value="NPI-1">Individual providers</option>
+        </select>
+      </div>
+      <div class="field">
+        <button class="btn" id="go" type="submit">Search registry</button>
+      </div>
+    </form>
+    <p class="hint" id="hint">Tip: the registry needs a city, ZIP, or specialty alongside the state — a whole state on its own is too broad for the API.</p>
+    <div id="notices"></div>
+  </section>
+
+  <!-- ---------- results ---------- -->
+  <div id="results" class="hidden">
+
+    <div class="tiles">
+      <div class="tile"><div class="k">Providers found</div><div class="v" id="t-total">—</div></div>
+      <div class="tile"><div class="k">Shown after filters</div><div class="v" id="t-shown">—</div></div>
+      <div class="tile"><div class="k">Registered in last 12 months</div><div class="v" id="t-new">—</div></div>
+      <div class="tile"><div class="k">Most recent NPI issued</div><div class="v" id="t-latest">—</div></div>
+    </div>
+
+    <section class="card" id="chart-card">
+      <div class="card-head">
+        <div>
+          <h2>NPI registrations by year</h2>
+          <p class="sub" id="chart-sub">Click a year to filter the list below.</p>
+        </div>
+        <div class="chips" id="range-chips">
+          <button class="chip" type="button" data-months="0" aria-pressed="true">All years</button>
+          <button class="chip" type="button" data-months="12" aria-pressed="false">Last 12 months</button>
+          <button class="chip" type="button" data-months="36" aria-pressed="false">Last 3 years</button>
+          <button class="chip" type="button" data-months="60" aria-pressed="false">Last 5 years</button>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <svg id="chart" role="img" aria-label="Bar chart of NPI registrations per year"></svg>
+        <div class="tip" id="tip"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <div>
+          <h2 id="list-title">Providers</h2>
+          <p class="sub" id="list-sub">Newest registrations first.</p>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+          <input id="f-filter" type="search" placeholder="Filter by name, city, specialty…" style="width:230px" aria-label="Filter results" />
+          <button class="btn ghost" type="button" id="csv">Download CSV</button>
+        </div>
+      </div>
+      <p class="scroll-hint">Swipe the table sideways for address, phone and NPI. →</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="sortable" data-key="date" aria-sort="descending">NPI issued<span class="arrow">▼</span></th>
+              <th class="sortable" data-key="name">Provider<span class="arrow">▼</span></th>
+              <th class="sortable" data-key="specialty">Primary specialty<span class="arrow">▼</span></th>
+              <th class="sortable" data-key="city">City<span class="arrow">▼</span></th>
+              <th>Address</th>
+              <th class="sortable" data-key="phone">Phone<span class="arrow">▼</span></th>
+              <th class="sortable" data-key="npi">NPI<span class="arrow">▼</span></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="empty hidden" id="empty"></div>
+    </section>
+  </div>
+
+  <div id="initial" class="card empty">
+    <b>Start with a state and a city</b>
+    Results load straight from the CMS NPPES registry — nothing is stored anywhere.
+  </div>
+
+  <details class="help">
+    <summary>How this works &amp; what the numbers mean</summary>
+    <ul>
+      <li><b>Where the data comes from:</b> the public CMS NPPES registry API (<code>npiregistry.cms.hhs.gov</code>). Every search hits it live from your browser.</li>
+      <li><b>"NPI issued"</b> is the enumeration date — the day that provider or clinic was granted its National Provider Identifier. A recent date usually means a newly opened practice or a provider who just started billing in the US.</li>
+      <li><b>Year filtering happens here, not at the API.</b> The registry has no date filter, so the dashboard loads every matching record and groups it by enumeration year.</li>
+      <li><b>1,200-record ceiling:</b> the API returns at most 1,200 records per search (200 per page, 6 pages). If you hit it, narrow the search by city, ZIP, or specialty for accurate year counts.</li>
+      <li><b>Addresses</b> shown are the practice location, not the mailing address.</li>
+    </ul>
+  </details>
+
+  <footer>Data © CMS NPPES · This dashboard stores nothing and requires no API key.</footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const API   = "https://npiregistry.cms.hhs.gov/api/";
+  const RELAY = "https://api.allorigins.win/raw?url="; // only used if you opt in (see CORS notice)
+  const PAGE = 200, MAX_SKIP = 1000, CAP = PAGE + MAX_SKIP;
+
+  const STATES = [["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
+    ["CO","Colorado"],["CT","Connecticut"],["DE","Delaware"],["DC","District of Columbia"],["FL","Florida"],
+    ["GA","Georgia"],["HI","Hawaii"],["ID","Idaho"],["IL","Illinois"],["IN","Indiana"],["IA","Iowa"],
+    ["KS","Kansas"],["KY","Kentucky"],["LA","Louisiana"],["ME","Maine"],["MD","Maryland"],["MA","Massachusetts"],
+    ["MI","Michigan"],["MN","Minnesota"],["MS","Mississippi"],["MO","Missouri"],["MT","Montana"],["NE","Nebraska"],
+    ["NV","Nevada"],["NH","New Hampshire"],["NJ","New Jersey"],["NM","New Mexico"],["NY","New York"],
+    ["NC","North Carolina"],["ND","North Dakota"],["OH","Ohio"],["OK","Oklahoma"],["OR","Oregon"],
+    ["PA","Pennsylvania"],["RI","Rhode Island"],["SC","South Carolina"],["SD","South Dakota"],["TN","Tennessee"],
+    ["TX","Texas"],["UT","Utah"],["VT","Vermont"],["VA","Virginia"],["WA","Washington"],["WV","West Virginia"],
+    ["WI","Wisconsin"],["WY","Wyoming"],["PR","Puerto Rico"],["VI","Virgin Islands"],["GU","Guam"],["AS","American Samoa"]];
+
+  const $ = id => document.getElementById(id);
+  const el = {
+    form:$("search-form"), go:$("go"), hint:$("hint"), notices:$("notices"),
+    state:$("f-state"), city:$("f-city"), zip:$("f-zip"), tax:$("f-tax"), type:$("f-type"),
+    results:$("results"), initial:$("initial"), chart:$("chart"), tip:$("tip"),
+    rows:$("rows"), empty:$("empty"), filter:$("f-filter"), csv:$("csv"),
+    chips:$("range-chips"), chartSub:$("chart-sub"), listTitle:$("list-title"), listSub:$("list-sub"),
+    tTotal:$("t-total"), tShown:$("t-shown"), tNew:$("t-new"), tLatest:$("t-latest")
+  };
+
+  let RAW = [];                       // every record loaded by the last search
+  let RANGE = { months:0, year:null }; // months = rolling window, year = one clicked bar
+  let SORT = { key:"date", dir:"desc" };
+  let useRelay = false, lastQuery = null;
+
+  STATES.forEach(([abbr,name]) => el.state.add(new Option(name + " (" + abbr + ")", abbr)));
+
+  /* ---------- helpers ---------- */
+  const num = n => n.toLocaleString("en-US");
+  const KEEP_UPPER = new Set(["LLC","PLLC","PC","PA","LP","LLP","INC","MD","DO","DDS","DMD","DPM","OD","DC","PT","OT",
+    "RN","NP","PhD","LCSW","MSW","MPH","PA-C","APRN","FNP","II","III","IV","USA","US","ER","ENT","MRI","LTD","CO","DBA"]);
+  function titleCase(s){
+    if(!s) return "";
+    return s.toLowerCase().replace(/[^\s\/\-]+/g, w => {
+      const up = w.toUpperCase().replace(/[.,]/g,"");
+      if(KEEP_UPPER.has(up)) return w.toUpperCase();
+      return w.charAt(0).toUpperCase() + w.slice(1);
+    });
+  }
+  function fmtPhone(p){
+    const d = (p || "").replace(/\D/g,"");
+    return d.length === 10 ? "(" + d.slice(0,3) + ") " + d.slice(3,6) + "-" + d.slice(6) : (p || "");
+  }
+  function fmtDate(iso){
+    if(!iso) return "—";
+    const d = new Date(iso + "T00:00:00");
+    return isNaN(d) ? iso : d.toLocaleDateString("en-US",{month:"short", day:"numeric", year:"numeric"});
+  }
+  function monthsAgoISO(m){
+    const d = new Date(); d.setMonth(d.getMonth() - m);
+    return d.toISOString().slice(0,10);
+  }
+
+  /* ---------- normalise one API record ---------- */
+  function normalize(r){
+    const b = r.basic || {};
+    const addrs = r.addresses || [];
+    const loc = addrs.find(a => a.address_purpose === "LOCATION") || addrs[0] || {};
+    const taxes = r.taxonomies || [];
+    const tax = taxes.find(t => t.primary) || taxes[0] || {};
+    const isOrg = r.enumeration_type === "NPI-2";
+    const rawName = isOrg
+      ? (b.organization_name || "")
+      : [b.first_name, b.middle_name, b.last_name].filter(Boolean).join(" ") + (b.credential ? ", " + b.credential : "");
+    const date = (b.enumeration_date || "").slice(0,10);
+    return {
+      npi: String(r.number || ""),
+      name: titleCase(rawName) || "—",
+      isOrg,
+      date,
+      year: date ? Number(date.slice(0,4)) : null,
+      specialty: tax.desc || "—",
+      street: titleCase([loc.address_1, loc.address_2].filter(Boolean).join(", ")),
+      city: titleCase(loc.city || ""),
+      state: loc.state || "",
+      zip: (loc.postal_code || "").slice(0,5),
+      phone: fmtPhone(loc.telephone_number),
+      status: b.status || ""
+    };
+  }
+
+  /* ---------- notices ---------- */
+  function notice(kind, html){
+    const d = document.createElement("div");
+    d.className = "notice " + kind;
+    d.innerHTML = html;
+    el.notices.appendChild(d);
+    return d;
+  }
+  const clearNotices = () => { el.notices.innerHTML = ""; };
+
+  /* ---------- fetching ---------- */
+  async function fetchPage(params, skip){
+    const qs = new URLSearchParams(Object.assign({}, params, {
+      version:"2.1", limit:String(PAGE), skip:String(skip)
+    }));
+    const target = API + "?" + qs.toString();
+    const res = await fetch(useRelay ? RELAY + encodeURIComponent(target) : target);
+    if(!res.ok) throw new Error("The registry returned HTTP " + res.status + ".");
+    return res.json();
+  }
+
+  async function loadAll(params){
+    const out = [];
+    for(let skip = 0; skip <= MAX_SKIP; skip += PAGE){
+      const data = await fetchPage(params, skip);
+      if(data && data.Errors && data.Errors.length){
+        throw new Error(data.Errors.map(e => e.description).join(" "));
+      }
+      const results = (data && data.results) || [];
+      out.push(...results.map(normalize));
+      el.go.textContent = "Loaded " + num(out.length) + "…";
+      if(results.length < PAGE) break;
+    }
+    return out;
+  }
+
+  /* ---------- search ---------- */
+  el.form.addEventListener("submit", async e => {
+    e.preventDefault();
+    clearNotices();
+
+    const params = { address_purpose:"LOCATION" };
+    const state = el.state.value.trim();
+    const city  = el.city.value.trim();
+    const zip   = el.zip.value.trim();
+    const tax   = el.tax.value.trim();
+    const type  = el.type.value;
+
+    if(state) params.state = state;
+    if(city)  params.city = city;
+    if(zip)   params.postal_code = zip;
+    if(tax)   params.taxonomy_description = tax;
+    if(type)  params.enumeration_type = type;
+
+    if(!state && !city && !zip && !tax){
+      notice("warn", "Enter at least a state and a city to search.");
+      return;
+    }
+    if(state && !city && !zip && !tax){
+      notice("warn", "<span><strong>The registry can’t search a whole state at once.</strong> Add a city, a ZIP code, or a specialty and try again.</span>");
+      return;
+    }
+
+    lastQuery = params;
+    el.go.disabled = true; el.go.textContent = "Searching…";
+    try {
+      RAW = await loadAll(params);
+      render(true);
+    } catch(err){
+      handleError(err);
+    } finally {
+      el.go.disabled = false; el.go.textContent = "Search registry";
+    }
+  });
+
+  function handleError(err){
+    const isNetwork = (err instanceof TypeError);
+    if(isNetwork && !useRelay){
+      const n = notice("warn",
+        "<span><strong>Your browser blocked the request to the registry (CORS).</strong> " +
+        "You can retry through a public relay — your search terms travel through a third-party service, " +
+        "no personal data is sent. Hosting this file on any web server usually avoids the issue.</span>");
+      const b = document.createElement("button");
+      b.className = "btn"; b.type = "button"; b.textContent = "Retry via relay";
+      b.onclick = () => { useRelay = true; clearNotices(); el.form.requestSubmit(); };
+      n.appendChild(b);
+    } else {
+      notice("warn", "<span><strong>Search failed.</strong> " + (err.message || "Please try again.") + "</span>");
+    }
+  }
+
+  /* ---------- filtering ---------- */
+  function textFiltered(){
+    const q = el.filter.value.trim().toLowerCase();
+    if(!q) return RAW;
+    return RAW.filter(r =>
+      (r.name + " " + r.city + " " + r.specialty + " " + r.npi + " " + r.zip).toLowerCase().includes(q));
+  }
+  function rangeFiltered(rows){
+    if(RANGE.year != null) return rows.filter(r => r.year === RANGE.year);
+    if(RANGE.months > 0){
+      const cutoff = monthsAgoISO(RANGE.months);
+      return rows.filter(r => r.date && r.date >= cutoff);
+    }
+    return rows;
+  }
+  function sortRows(rows){
+    const k = SORT.key, dir = SORT.dir === "asc" ? 1 : -1;
+    return rows.slice().sort((a,b) => {
+      const av = a[k] == null ? "" : a[k], bv = b[k] == null ? "" : b[k];
+      return String(av).localeCompare(String(bv), "en", {numeric:true}) * dir;
+    });
+  }
+
+  /* ---------- render ---------- */
+  function render(isNewSearch){
+    el.initial.classList.add("hidden");
+    el.results.classList.remove("hidden");
+
+    if(isNewSearch){
+      RANGE = { months:0, year:null };
+      el.filter.value = "";
+      setChip(0);
+      if(RAW.length >= CAP){
+        notice("info", "<span><strong>Showing the first " + num(CAP) + " records</strong> — that’s the registry’s ceiling for one search. " +
+          "Narrow it with a city, ZIP, or specialty to get complete year counts.</span>");
+      }
+      if(!RAW.length){
+        notice("info", "<span>No providers matched that search. Check the city spelling, or drop the specialty filter.</span>");
+      }
+    }
+
+    const base = textFiltered();
+    const rows = sortRows(rangeFiltered(base));
+
+    // tiles
+    const cutoff12 = monthsAgoISO(12);
+    const recent = RAW.filter(r => r.date && r.date >= cutoff12).length;
+    const latest = RAW.reduce((m,r) => (r.date && r.date > m ? r.date : m), "");
+    el.tTotal.innerHTML = num(RAW.length) + (RAW.length >= CAP ? ' <small>(capped)</small>' : "");
+    el.tShown.textContent = num(rows.length);
+    el.tNew.textContent = num(recent);
+    el.tLatest.innerHTML = latest ? fmtDate(latest) : "—";
+    el.tLatest.style.fontSize = "18px";
+
+    drawChart(base);
+    drawTable(rows);
+
+    el.listTitle.textContent = RANGE.year != null ? "Providers registered in " + RANGE.year
+      : RANGE.months > 0 ? "Providers registered in the last " + (RANGE.months === 12 ? "12 months" : (RANGE.months/12) + " years")
+      : "All providers";
+    el.listSub.textContent = num(rows.length) + " of " + num(RAW.length) + " loaded records";
+  }
+
+  /* ---------- chart ---------- */
+  function yearCounts(rows){
+    const map = new Map();
+    rows.forEach(r => { if(r.year) map.set(r.year, (map.get(r.year) || 0) + 1); });
+    const years = [...map.keys()].sort((a,b) => a - b);
+    if(!years.length) return [];
+    const out = [];
+    for(let y = years[0]; y <= years[years.length-1]; y++) out.push({ year:y, count:map.get(y) || 0 });
+    return out;
+  }
+
+  function niceTicks(max){
+    if(max <= 0) return [0,1];
+    const raw = max / 4;
+    const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const n = raw / mag;
+    const step = (n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10) * mag;
+    const ticks = [];
+    for(let v = 0; v <= Math.ceil(max/step) * step + 1e-9; v += step) ticks.push(v);
+    return ticks;
+  }
+
+  function barPath(x,y,w,h,r){
+    r = Math.max(0, Math.min(r, w/2, h));
+    return "M" + x + "," + (y+h) + " L" + x + "," + (y+r) +
+           " Q" + x + "," + y + " " + (x+r) + "," + y +
+           " L" + (x+w-r) + "," + y + " Q" + (x+w) + "," + y + " " + (x+w) + "," + (y+r) +
+           " L" + (x+w) + "," + (y+h) + " Z";
+  }
+
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const mk = (tag, attrs) => {
+    const n = document.createElementNS(SVGNS, tag);
+    for(const k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  };
+
+  let chartData = [];
+  function drawChart(rows){
+    chartData = yearCounts(rows);
+    paint();
+  }
+
+  function paint(){
+    const svg = el.chart;
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    const W = Math.max(320, svg.clientWidth || svg.parentNode.clientWidth || 640);
+    const H = 250, PL = 46, PR = 10, PT = 18, PB = 34;      // PB reserves the x-axis band
+    const plotW = W - PL - PR, plotH = H - PT - PB;
+    svg.setAttribute("width", W); svg.setAttribute("height", H);
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+
+    if(!chartData.length){
+      svg.appendChild(Object.assign(mk("text",{x:W/2, y:H/2, "text-anchor":"middle", fill:"var(--muted)",
+        "font-size":"13", "font-family":"inherit"}), {textContent:"No dated registrations to chart."}));
+      return;
+    }
+
+    const max = Math.max(...chartData.map(d => d.count));
+    const ticks = niceTicks(max);
+    const top = ticks[ticks.length-1] || 1;
+    const y = v => PT + plotH - (v / top) * plotH;
+
+    // gridlines + y labels (solid hairlines, recessive)
+    ticks.forEach(t => {
+      svg.appendChild(mk("line",{x1:PL, x2:W-PR, y1:y(t), y2:y(t), stroke:"var(--grid)", "stroke-width":1}));
+      const lbl = mk("text",{x:PL-9, y:y(t)+4, "text-anchor":"end", fill:"var(--muted)",
+        "font-size":"11", "font-family":"inherit"});
+      lbl.textContent = num(t);
+      svg.appendChild(lbl);
+    });
+
+    const band = plotW / chartData.length;
+    const barW = Math.max(3, Math.min(24, band - 2));       // 2px surface gap between neighbours
+    const every = band < 30 ? Math.ceil(30 / band) : 1;      // thin x labels so they never collide
+    const maxYear = chartData.reduce((m,d) => d.count > m.count ? d : m, chartData[0]).year;
+
+    chartData.forEach((d,i) => {
+      const cx = PL + band * i + band/2;
+      const bx = cx - barW/2;
+      const bh = d.count === 0 ? 0 : Math.max(2, plotH - (y(d.count) - PT));
+      const selected = RANGE.year === d.year;
+      const dim = RANGE.year != null && !selected;
+
+      if(bh > 0){
+        svg.appendChild(mk("path",{
+          d: barPath(bx, PT + plotH - bh, barW, bh, 4),
+          fill: dim ? "var(--series-dim)" : "var(--series-1)"
+        }));
+      }
+
+      // x label
+      if(i % every === 0 || selected){
+        const t = mk("text",{x:cx, y:H-13, "text-anchor":"middle",
+          fill: selected ? "var(--text)" : "var(--muted)",
+          "font-size":"11", "font-weight": selected ? "600" : "400", "font-family":"inherit"});
+        t.textContent = d.year;
+        svg.appendChild(t);
+      }
+
+      // selective value labels: the peak year, and whatever is selected
+      if((d.year === maxYear || selected) && d.count > 0){
+        const v = mk("text",{x:cx, y: PT + plotH - bh - 6, "text-anchor":"middle",
+          fill:"var(--text)", "font-size":"11", "font-weight":"600", "font-family":"inherit"});
+        v.textContent = num(d.count);
+        svg.appendChild(v);
+      }
+
+      // full-height hit target (bigger than the mark)
+      const hit = mk("rect",{x:PL + band*i, y:PT, width:band, height:plotH, fill:"transparent",
+        class:"band", tabindex:"0", role:"button",
+        "aria-label": d.year + ": " + d.count + " registrations. Activate to filter."});
+      hit.style.cursor = "pointer";
+      const show = () => {
+        el.tip.innerHTML = "<b>" + d.year + "</b> · " + num(d.count) + " registration" + (d.count === 1 ? "" : "s");
+        el.tip.style.opacity = "1";
+        const half = el.tip.offsetWidth / 2;                    // keep it inside the card
+        el.tip.style.left = Math.min(Math.max(cx, half + 2), W - half - 2) + "px";
+        el.tip.style.top = Math.max(22, PT + plotH - bh - 10) + "px";
+      };
+      const hide = () => { el.tip.style.opacity = "0"; };
+      const pick = () => {
+        RANGE = { months:0, year: RANGE.year === d.year ? null : d.year };
+        setChip(0);
+        render(false);
+      };
+      hit.addEventListener("mouseenter", show);
+      hit.addEventListener("focus", show);
+      hit.addEventListener("mouseleave", hide);
+      hit.addEventListener("blur", hide);
+      hit.addEventListener("click", pick);
+      hit.addEventListener("keydown", e => {
+        if(e.key === "Enter" || e.key === " "){ e.preventDefault(); pick(); }
+      });
+      svg.appendChild(hit);
+    });
+
+    // baseline
+    svg.appendChild(mk("line",{x1:PL, x2:W-PR, y1:PT+plotH, y2:PT+plotH, stroke:"var(--line)", "stroke-width":1}));
+    el.chartSub.textContent = RANGE.year != null
+      ? "Showing " + RANGE.year + " only — click the bar again to clear."
+      : "Click a year to filter the list below.";
+  }
+
+  /* ---------- table ---------- */
+  function drawTable(rows){
+    const cutoff12 = monthsAgoISO(12);
+    el.rows.innerHTML = "";
+    el.empty.classList.toggle("hidden", rows.length > 0);
+    if(!rows.length){
+      el.empty.innerHTML = "<b>Nothing matches these filters</b>Try another year, or clear the text filter.";
+      return;
+    }
+    const frag = document.createDocumentFragment();
+    rows.forEach(r => {
+      const tr = document.createElement("tr");
+      const isNew = r.date && r.date >= cutoff12;
+      tr.innerHTML =
+        '<td class="date">' + fmtDate(r.date) + (isNew ? ' <span class="pill new">New</span>' : "") + "</td>" +
+        '<td class="name">' + esc(r.name) + '<br><span class="pill ' + (r.isOrg ? "org" : "ind") + '">' +
+          (r.isOrg ? "Clinic / org" : "Individual") + "</span></td>" +
+        '<td class="muted">' + esc(r.specialty) + "</td>" +
+        "<td>" + esc(r.city) + (r.state ? ", " + esc(r.state) : "") + "</td>" +
+        '<td class="muted">' + esc(r.street) + (r.zip ? " " + esc(r.zip) : "") + "</td>" +
+        "<td>" + (r.phone ? '<a href="tel:' + r.phone.replace(/\D/g,"") + '">' + esc(r.phone) + "</a>" : '<span class="muted">—</span>') + "</td>" +
+        '<td class="npi"><a href="https://npiregistry.cms.hhs.gov/provider-view/' + encodeURIComponent(r.npi) +
+          '" target="_blank" rel="noopener">' + esc(r.npi) + "</a></td>";
+      frag.appendChild(tr);
+    });
+    el.rows.appendChild(frag);
+  }
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, c =>
+      ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  }
+
+  /* ---------- controls ---------- */
+  function setChip(months){
+    [...el.chips.children].forEach(c => c.setAttribute("aria-pressed", String(Number(c.dataset.months) === months && RANGE.year == null)));
+  }
+  el.chips.addEventListener("click", e => {
+    const b = e.target.closest(".chip");
+    if(!b) return;
+    RANGE = { months: Number(b.dataset.months), year:null };
+    setChip(RANGE.months);
+    render(false);
+  });
+
+  el.filter.addEventListener("input", () => render(false));
+
+  document.querySelectorAll("th.sortable").forEach(th => {
+    th.addEventListener("click", () => {
+      const key = th.dataset.key;
+      SORT = { key, dir: SORT.key === key && SORT.dir === "desc" ? "asc" : "desc" };
+      document.querySelectorAll("th.sortable").forEach(o => o.removeAttribute("aria-sort"));
+      th.setAttribute("aria-sort", SORT.dir === "asc" ? "ascending" : "descending");
+      th.querySelector(".arrow").textContent = SORT.dir === "asc" ? "▲" : "▼";
+      render(false);
+    });
+  });
+
+  el.csv.addEventListener("click", () => {
+    const rows = sortRows(rangeFiltered(textFiltered()));
+    if(!rows.length) return;
+    const head = ["NPI","Name","Type","NPI issued","Primary specialty","Address","City","State","ZIP","Phone","Status"];
+    const q = v => '"' + String(v == null ? "" : v).replace(/"/g,'""') + '"';
+    const csv = [head.join(",")].concat(rows.map(r => [
+      r.npi, r.name, r.isOrg ? "Organization" : "Individual", r.date, r.specialty,
+      r.street, r.city, r.state, r.zip, r.phone, r.status
+    ].map(q).join(","))).join("\r\n");
+    const blob = new Blob(["﻿" + csv], { type:"text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "npi-registry-" + (lastQuery && lastQuery.city ? lastQuery.city.toLowerCase().replace(/\s+/g,"-") + "-" : "") +
+                 new Date().toISOString().slice(0,10) + ".csv";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
+
+  let rt;
+  window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(paint, 120); });
+})();
+</script>
+</body>
+</html>
